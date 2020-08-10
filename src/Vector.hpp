@@ -1,0 +1,107 @@
+#pragma once
+
+#include <x86intrin.h>
+
+#include <cmath>
+#include <cstdint>
+
+struct Vec4f32 {
+  union {
+    __m128 m_reg;
+    struct {
+      float x, y, z, w;
+    };
+  };
+
+  inline Vec4f32(const __m128 &reg) noexcept { this->m_reg = reg; }
+
+  inline Vec4f32(const float x = 0.f, const float y = 0.f, const float z = 0.f,
+                 const float w = 0.f) noexcept {
+    this->m_reg = _mm_set_ps(w, z, y, x);
+  }
+
+  inline float Length() const noexcept {
+    return std::sqrt(
+        _mm_extract_ps(_mm_dp_ps(this->m_reg, this->m_reg, 0xFF), 0u));
+  }
+
+  inline void Normalize() noexcept { this->operator/=(this->Length()); }
+
+  inline void operator+=(const Vec4f32 &other) noexcept {
+    this->m_reg = _mm_add_ps(this->m_reg, other.m_reg);
+  }
+  inline void operator-=(const Vec4f32 &other) noexcept {
+    this->m_reg = _mm_sub_ps(this->m_reg, other.m_reg);
+  }
+  inline void operator*=(const Vec4f32 &other) noexcept {
+    this->m_reg = _mm_mul_ps(this->m_reg, other.m_reg);
+  }
+  inline void operator/=(const Vec4f32 &other) noexcept {
+    this->m_reg = _mm_div_ps(this->m_reg, other.m_reg);
+  }
+
+  inline void operator*=(const float &n) noexcept {
+    this->m_reg = _mm_mul_ps(this->m_reg, _mm_set1_ps(n));
+  }
+
+  inline void operator/=(const float &n) noexcept {
+    this->m_reg = _mm_div_ps(this->m_reg, _mm_set1_ps(n));
+  }
+
+  static inline Vec4f32 Normalized(const Vec4f32 &v) noexcept {
+    return v / v.Length();
+  }
+
+  static inline float DotProduct(const Vec4f32 &a, const Vec4f32 &b) noexcept {
+    return _mm_extract_ps(_mm_dp_ps(a.m_reg, b.m_reg, 0xFF), 0u);
+  }
+
+  static inline Vec4f32 Reflected(const Vec4f32 &in,
+                                  const Vec4f32 &normal) noexcept {
+    return in - 2 * Vec4f32::DotProduct(in, normal) * normal;
+  }
+};
+
+inline Vec4f32 operator+(const Vec4f32 &a, const Vec4f32 &b) noexcept {
+  return Vec4f32(_mm_add_ps(a.m_reg, b.m_reg));
+}
+
+inline Vec4f32 operator-(const Vec4f32 &a, const Vec4f32 &b) noexcept {
+  return Vec4f32(_mm_sub_ps(a.m_reg, b.m_reg));
+}
+
+inline Vec4f32 operator*(const Vec4f32 &a, const Vec4f32 &b) noexcept {
+  return Vec4f32(_mm_mul_ps(a.m_reg, b.m_reg));
+}
+
+inline Vec4f32 operator/(const Vec4f32 &a, const Vec4f32 &b) noexcept {
+  return Vec4f32(_mm_div_ps(a.m_reg, b.m_reg));
+}
+
+inline Vec4f32 operator*(const Vec4f32 &v, const float &n) noexcept {
+  return _mm_mul_ps(v.m_reg, _mm_set1_ps(n));
+}
+
+inline Vec4f32 operator/(const Vec4f32 &v, const float &n) noexcept {
+  return _mm_div_ps(v.m_reg, _mm_set1_ps(n));
+}
+
+inline Vec4f32 operator*(const float &n, const Vec4f32 &v) noexcept {
+  return operator*(v, n);
+}
+
+inline Vec4f32 operator/(const Vec4f32 &v, const float &n) noexcept {
+  return _mm_div_ps(v.m_reg, _mm_set1_ps(n));
+}
+
+inline Vec4f32 operator/(const float &n, const Vec4f32 &v) noexcept {
+  return operator/(v, n);
+}
+
+struct Vec3u8 {
+  std::uint8_t r, g, b;
+};
+
+struct Vec4u8 : Vec3u8 {
+  std::uint8_t a;
+};
