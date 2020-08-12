@@ -47,15 +47,6 @@ struct Vec4f32 {
   inline void operator/=(const float &n) noexcept {
     this->m_reg = _mm_div_ps(this->m_reg, _mm_set1_ps(n));
   }
-
-  static inline Vec4f32 Normalized(const Vec4f32 &v) noexcept;
-
-  static inline float DotProduct(const Vec4f32 &a, const Vec4f32 &b) noexcept {
-    return _mm_extract_ps(_mm_dp_ps(a.m_reg, b.m_reg, 0xFF), 0u);
-  }
-
-  static inline Vec4f32 Reflected(const Vec4f32 &in,
-                                  const Vec4f32 &normal) noexcept;
 };
 
 inline Vec4f32 operator+(const Vec4f32 &a, const Vec4f32 &b) noexcept {
@@ -90,12 +81,15 @@ inline Vec4f32 operator/(const float &n, const Vec4f32 &v) noexcept {
   return operator/(v, n);
 }
 
-inline Vec4f32 Vec4f32::Reflected(const Vec4f32 &in,
-                                         const Vec4f32 &normal) noexcept {
-  return in - 2 * Vec4f32::DotProduct(in, normal) * normal;
+inline float DotProduct(const Vec4f32 &a, const Vec4f32 &b) noexcept {
+  return _mm_extract_ps(_mm_dp_ps(a.m_reg, b.m_reg, 0xFF), 0u);
 }
 
-inline Vec4f32 Vec4f32::Normalized(const Vec4f32 &v) noexcept {
+inline Vec4f32 Reflected(const Vec4f32 &in, const Vec4f32 &normal) noexcept {
+  return in - 2 * DotProduct(in, normal) * normal;
+}
+
+inline Vec4f32 Normalized(const Vec4f32 &v) noexcept {
     return v / v.Length();
 }
 

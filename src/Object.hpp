@@ -28,8 +28,8 @@ struct Sphere : Object {
 	virtual std::optional<Intersection> Intersects(const Ray& ray) noexcept override {
 		Vec3f32 L = this->position - ray.origin; 
 
-        float tca = Vec3f32::DotProduct(L, ray.direction); 
-    	float d2 = Vec3f32::DotProduct(L, L) - tca * tca; 
+        float tca = DotProduct(L, ray.direction); 
+    	float d2 = DotProduct(L, L) - tca * tca; 
 
         if (d2 > this->radius)
 		return {};
