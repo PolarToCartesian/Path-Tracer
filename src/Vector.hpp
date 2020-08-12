@@ -5,6 +5,10 @@
 #include <cmath>
 #include <cstdint>
 
+struct Vec4f32;
+
+inline float DotProduct(const Vec4f32 &a, const Vec4f32 &b) noexcept;
+
 struct Vec4f32 {
   union {
     __m128 m_reg;
@@ -21,8 +25,7 @@ struct Vec4f32 {
   }
 
   inline float Length() const noexcept {
-    return std::sqrt(
-        _mm_extract_ps(_mm_dp_ps(this->m_reg, this->m_reg, 0xFF), 0u));
+    return std::sqrt(DotProduct(this->m_reg, this->m_reg));
   }
 
   inline void Normalize() noexcept { this->operator/=(this->Length()); }
@@ -82,7 +85,14 @@ inline Vec4f32 operator/(const float &n, const Vec4f32 &v) noexcept {
 }
 
 inline float DotProduct(const Vec4f32 &a, const Vec4f32 &b) noexcept {
-  return _mm_extract_ps(_mm_dp_ps(a.m_reg, b.m_reg, 0xFF), 0u);
+  // __m128 product = (a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w)
+  const __m128 product  = _mm_mul_ps(a.m_reg, b.m_reg);
+
+  const __m128 tmp_hadd1 = _mm_hadd_ps(product,   product);
+  const __m128 tmp_hadd2 = _mm_hadd_ps(tmp_hadd1, tmp_hadd1);
+
+  // return (tmp_hadd2.x)
+  return _mm_cvtss_f32(tmp_hadd2);
 }
 
 inline Vec4f32 Reflected(const Vec4f32 &in, const Vec4f32 &normal) noexcept {

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <optional>
+#include <limits>
 #include <vector>
+#include <cstdint>
 
 #include "Camera.hpp"
 #include "Image.hpp"

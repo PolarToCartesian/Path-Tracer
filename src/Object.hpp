@@ -12,7 +12,7 @@ struct Object {
   Object(const Vec3f32& position, const Material& material) noexcept
       : position(position), material(material) {}
 
-  virtual std::optional<Intersection> Intersects(const Ray& in) noexcept = 0;
+  virtual std::optional<Intersection> Intersects(const Ray& in) const noexcept = 0;
 
   virtual ~Object() {}
 };
@@ -25,7 +25,7 @@ struct Sphere : Object {
       : Object(position, material), radius(radius) {}
 
   virtual std::optional<Intersection> Intersects(
-      const Ray& ray) noexcept override {
+      const Ray& ray) const noexcept override {
     Vec3f32 L = this->position - ray.origin;
 
     float tca = DotProduct(L, ray.direction);
