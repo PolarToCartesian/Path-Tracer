@@ -22,10 +22,24 @@ void Renderer::Draw(Image* pImage, const std::uint32_t nSamples) noexcept {
                              static_cast<std::uint8_t>(pixelColor.y * 255u),
                              static_cast<std::uint8_t>(pixelColor.z * 255u)};
     }
+
+    // Update Progress Bar
+    printf("\r");
+    const std::uint32_t barLength = 50u;
+    const std::uint32_t progress = std::ceil(y/(float)surface.GetHeight() * barLength);
+    for (std::uint32_t indicator = 0u; indicator < progress; indicator++)
+      putc('=', stdout);
+    for (std::uint32_t indicator = progress - 1u; indicator < barLength; indicator++)
+      putc('-', stdout);
+
+    fflush(stdout);
   }
 }
 
-Vec3f32 Renderer::TraceRay(const Ray& ray) noexcept {
+Vec3f32 Renderer::TraceRay(const Ray& ray, const std::uint32_t recursionDepth) noexcept {
+  if (recursionDepth == 10u)
+    return {};
+
   // Get Closest Intersection
   Intersection closestIntersection;
   {
@@ -43,5 +57,29 @@ Vec3f32 Renderer::TraceRay(const Ray& ray) noexcept {
 
   if (closestIntersection.pObject == nullptr) return Vec3f32{ };
 
-  return closestIntersection.pObject->material.diffuseColor;
+  // Extract Intersected Object
+  const Object&   object   = *closestIntersection.pObject;
+  const Material& material = object.material;
+
+  Ray newRay;
+  newRay.origin    = closestIntersection.location;
+
+  const float u = std::rand()/(float)RAND_MAX;
+  const float v = std::rand()/(float)RAND_MAX;
+
+  auto sqrt_v = sqrt(v);
+
+  newRay.direction = object.GetNormal(newRay.origin) * Normalized(Vec3f32(cos(2 * M_PI * u) * sqrt_v, sin(2 * M_PI * u) * sqrt_v,
+                                                               sqrt(1 - v)));
+
+  
+
+  const Vec3f32 incomingColor = TraceRay(newRay, recursionDepth + 1u);
+
+  Vec3f32 finalColor = material.diffuse * (material.emittance + incomingColor);
+  finalColor.x = std::clamp(finalColor.x, 0.f, 1.f);
+  finalColor.y = std::clamp(finalColor.y, 0.f, 1.f);
+  finalColor.z = std::clamp(finalColor.z, 0.f, 1.f);
+
+  return finalColor;
 }

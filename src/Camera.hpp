@@ -14,12 +14,13 @@ struct Camera {
 
     ray.origin = this->position;
 
-    ray.direction = Vec3f32{2 * (x + 1u) / (float)width - 1.f,
-                           2 * (height - y + 1u) / (float)height - 1.f, 1.f};
+    ray.direction = Vec3f32{(2 * (x + 1u) + std::rand()/(float)RAND_MAX - 0.5f) / (float)width - 1.f,
+                            (2 * (height - y + 1u) + std::rand()/(float)RAND_MAX - 0.5f) / (float)height - 1.f,
+                            1.f};
 
     ray.direction -= this->position;
     ray.direction.Normalize();
-    //std::printf("C: %.4f, %.4f, %.4f\n", ray.direction.x, ray.direction.y, ray.direction.z);
+
     return ray;
   }
 };

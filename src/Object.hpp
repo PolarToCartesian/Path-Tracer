@@ -12,7 +12,8 @@ struct Object {
   Object(const Vec3f32& position, const Material& material) noexcept
       : position(position), material(material) {}
 
-  virtual std::optional<Intersection> Intersects(const Ray& in) const noexcept = 0;
+  virtual Vec3f32                     GetNormal (const Vec3f32& point) const noexcept = 0;
+  virtual std::optional<Intersection> Intersects(const Ray& in)        const noexcept = 0;
 
   virtual ~Object() {}
 };
@@ -23,6 +24,10 @@ struct Sphere : Object {
   Sphere(const Vec3f32& position, const float radius,
          const Material& material) noexcept
       : Object(position, material), radius(radius) {}
+
+  virtual Vec3f32 GetNormal(const Vec3f32& point) const noexcept override {
+    return Normalized(point - this->position);
+  }
 
   virtual std::optional<Intersection> Intersects(
       const Ray& ray) const noexcept override {

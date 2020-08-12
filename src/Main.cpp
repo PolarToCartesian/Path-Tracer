@@ -3,16 +3,19 @@
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-  Image surface(500, 500);
+  Image surface(100, 100);
 
   Renderer::camera = Camera{Vec3f32{0.f, 0.f, 0.f}};
 
   Material material;
-  material.diffuseColor = Vec3f32{1.f, 1.f, 1.f};
+  material.diffuse = Vec3f32{1.f, 1.f, 1.f};
   Renderer::pObjects.push_back(
-      new Sphere(Vec3f32{0.f, 0.f, 5.f}, 1.f, material));
+      new Sphere(Vec3f32{0.f, 0.f, 1.5f}, 1.f, material));
+  material.emittance = {1.f,1.f,1.f};
+  Renderer::pObjects.push_back(
+      new Sphere(Vec3f32{0.f, 0.f, -1.25f}, 1.f, material));
 
-  Renderer::Draw(&surface, 10);
+  Renderer::Draw(&surface, 1000);
 
   surface.Save("frame.ppm");
 }

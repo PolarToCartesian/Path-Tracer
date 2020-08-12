@@ -4,6 +4,7 @@
 #include <limits>
 #include <vector>
 #include <cstdint>
+#include <algorithm>
 
 #include "Camera.hpp"
 #include "Image.hpp"
@@ -17,5 +18,5 @@ class Renderer {
 
   static void Draw(Image* pImage, const std::uint32_t nSamples) noexcept;
 
-  static Vec3f32 TraceRay(const Ray& ray) noexcept;
+  static Vec3f32 TraceRay(const Ray& ray, const std::uint32_t recursionDepth = 0u) noexcept;
 };
