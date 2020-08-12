@@ -89,9 +89,7 @@ inline Vec4f32 Reflected(const Vec4f32 &in, const Vec4f32 &normal) noexcept {
   return in - 2 * DotProduct(in, normal) * normal;
 }
 
-inline Vec4f32 Normalized(const Vec4f32 &v) noexcept {
-    return v / v.Length();
-}
+inline Vec4f32 Normalized(const Vec4f32 &v) noexcept { return v / v.Length(); }
 
 struct Vec3u8 {
   std::uint8_t r, g, b;
