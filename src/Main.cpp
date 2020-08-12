@@ -7,7 +7,7 @@ int main(int argc, char* argv[]) {
 	
 	Material material;
 	Renderer::pObjects.push_back(new Sphere(Vec3f32{0.f,0.f,5.f}, 1.f, material));
-	Renderer::Draw(&surface);
+	Renderer::Draw(&surface, 10);
 
 	surface.Save("frame.ppm");
 }
