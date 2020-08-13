@@ -10,6 +10,7 @@
 #include "Image.hpp"
 #include "Object.hpp"
 #include "Ray.hpp"
+#include "ProgressBar.hpp"
 
 class Renderer {
  public:

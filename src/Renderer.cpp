@@ -24,16 +24,10 @@ void Renderer::Draw(Image* pImage, const std::uint32_t nSamples) noexcept {
     }
 
     // Update Progress Bar
-    printf("\r");
-    const std::uint32_t barLength = 50u;
-    const std::uint32_t progress = std::ceil(y/(float)surface.GetHeight() * barLength);
-    for (std::uint32_t indicator = 0u; indicator < progress; indicator++)
-      putc('=', stdout);
-    for (std::uint32_t indicator = progress - 1u; indicator < barLength; indicator++)
-      putc('-', stdout);
-
-    fflush(stdout);
+    PrintProgressBar((y + 1u) / (float)surface.GetHeight());
   }
+
+  std::putc('\n', stdout);
 }
 
 Vec3f32 Renderer::TraceRay(const Ray& ray, const std::uint32_t recursionDepth) noexcept {
