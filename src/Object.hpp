@@ -44,7 +44,7 @@ struct Sphere : Object {
 
     if (t0 > t1) std::swap(t0, t1);
 
-    if (t0 < 0) {
+    if (t0 < 0.01f) {
       t0 = t1;
 
       if (t0 < 0) return {};

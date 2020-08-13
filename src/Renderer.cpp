@@ -48,7 +48,7 @@ Vec3f32 Renderer::TraceRay(const Ray& ray, const std::uint32_t recursionDepth) n
   Intersection closestIntersection;
   {
     const auto closestIntersectionOptional = Renderer::GetClosestIntersection(ray);
-    if (!closestIntersectionOptional.has_value()) return Vec3f32{ };
+    if (!closestIntersectionOptional.has_value() || recursionDepth == 10u) return Vec3f32{ };
 
     closestIntersection = closestIntersectionOptional.value();
   }
@@ -58,21 +58,12 @@ Vec3f32 Renderer::TraceRay(const Ray& ray, const std::uint32_t recursionDepth) n
   const Material& material = object.material;
 
   Ray newRay;
-  newRay.origin    = closestIntersection.location;
-
-  const float u = std::rand()/(float)RAND_MAX;
-  const float v = std::rand()/(float)RAND_MAX;
-
-  auto sqrt_v = sqrt(v);
-
-  newRay.direction = object.GetNormal(newRay.origin) * Normalized(Vec3f32(cos(2 * M_PI * u) * sqrt_v, sin(2 * M_PI * u) * sqrt_v,
-                                                               sqrt(1 - v)));
-
-  
+  newRay.origin = closestIntersection.location;
+  newRay.direction = object.GetNormal(newRay.origin);
 
   const Vec3f32 incomingColor = TraceRay(newRay, recursionDepth + 1u);
 
-  Vec3f32 finalColor = material.diffuse * (material.emittance + incomingColor);
+  Vec3f32 finalColor = material.emittance + incomingColor;
   finalColor.x = std::clamp(finalColor.x, 0.f, 1.f);
   finalColor.y = std::clamp(finalColor.y, 0.f, 1.f);
   finalColor.z = std::clamp(finalColor.z, 0.f, 1.f);

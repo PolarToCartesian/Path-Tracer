@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstdint>
 #include <algorithm>
+#include <chrono>
+#include <random>
 
 #include "Camera.hpp"
 #include "Image.hpp"
@@ -18,7 +20,7 @@ class Renderer {
   static std::vector<Object*> pObjects;
 
 private:
-  static std::optional<Intersection> Renderer::GetClosestIntersection(const Ray& ray) noexcept;
+  static std::optional<Intersection> GetClosestIntersection(const Ray& ray) noexcept;
 
 public:
   static void Draw(Image* pImage, const std::uint32_t nSamples) noexcept;
