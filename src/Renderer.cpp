@@ -20,26 +20,47 @@ std::optional<Intersection> Renderer::GetClosestIntersection(const Ray& ray) noe
 void Renderer::Draw(Image* pImage, const std::uint32_t nSamples) noexcept {
   Image& surface = *pImage;
 
-  for (std::uint32_t y = 0u; y < surface.GetHeight(); y++) {
-    for (std::uint32_t x = 0u; x < surface.GetWidth(); x++) {
-      Vec3f32 pixelColor;
+  std::future<void>* futures = new std::future<void>[surface.GetHeight()];
+  std::atomic<int> nFinishedJobs = 0u;
 
-      for (std::uint32_t i = 0u; i < nSamples; i++) {
-        const Ray& cameraRay = Renderer::camera.GenerateRandomRay(
-            x, y, surface.GetWidth(), surface.GetHeight());
-        pixelColor += TraceRay(cameraRay);
-      }
-
-      pixelColor /= nSamples;
-
-      surface(x, y) = Vec3u8{static_cast<std::uint8_t>(pixelColor.x * 255u),
-                             static_cast<std::uint8_t>(pixelColor.y * 255u),
-                             static_cast<std::uint8_t>(pixelColor.z * 255u)};
+  std::thread progressbarThread([&nFinishedJobs, &surface](){
+    while (nFinishedJobs != surface.GetHeight()) {
+      PrintProgressBar(nFinishedJobs, surface.GetHeight());
+      std::this_thread::yield();
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    // Update Progress Bar
-    PrintProgressBar((y + 1u) / (float)surface.GetHeight());
+    PrintProgressBar(nFinishedJobs, surface.GetHeight());
+  });
+
+  for (std::uint32_t y = 0u; y < surface.GetHeight(); y++) {
+    futures[y] = std::async(std::launch::async, [&nFinishedJobs, y, nSamples, &surface](){
+      for (std::uint32_t x = 0u; x < surface.GetWidth(); x++) {
+        Vec3f32 pixelColor;
+
+        for (std::uint32_t i = 0u; i < nSamples; i++) {
+          const Ray& cameraRay = Renderer::camera.GenerateRandomRay(
+              x, y, surface.GetWidth(), surface.GetHeight());
+          pixelColor += TraceRay(cameraRay);
+        }
+
+        pixelColor /= nSamples;
+
+        surface(x, y) = Vec3u8{static_cast<std::uint8_t>(pixelColor.x * 255u),
+                              static_cast<std::uint8_t>(pixelColor.y * 255u),
+                              static_cast<std::uint8_t>(pixelColor.z * 255u)};
+      }
+
+      nFinishedJobs++;
+    });
   }
+
+  for (std::uint32_t y = 0u; y < surface.GetHeight(); y++)
+    futures[y].wait();
+
+  progressbarThread.join();
+
+  delete[] futures;
 
   std::putc('\n', stdout);
 }
@@ -64,9 +85,7 @@ Vec3f32 Renderer::TraceRay(const Ray& ray, const std::uint32_t recursionDepth) n
   const Vec3f32 incomingColor = TraceRay(newRay, recursionDepth + 1u);
 
   Vec3f32 finalColor = material.emittance + incomingColor;
-  finalColor.x = std::clamp(finalColor.x, 0.f, 1.f);
-  finalColor.y = std::clamp(finalColor.y, 0.f, 1.f);
-  finalColor.z = std::clamp(finalColor.z, 0.f, 1.f);
+  finalColor.Clamp(0.f, 1.f);
 
   return finalColor;
 }

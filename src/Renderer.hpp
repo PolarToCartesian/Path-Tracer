@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <chrono>
 #include <random>
+#include <future>
 
 #include "Camera.hpp"
 #include "Image.hpp"

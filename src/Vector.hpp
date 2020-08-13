@@ -30,6 +30,13 @@ struct Vec4f32 {
 
   inline void Normalize() noexcept { this->operator/=(this->Length()); }
 
+  inline void Clamp(const float min, const float max) noexcept {
+    this->x = std::clamp(this->x, 0.f, 1.f);
+    this->y = std::clamp(this->y, 0.f, 1.f);
+    this->z = std::clamp(this->z, 0.f, 1.f);
+    this->w = std::clamp(this->w, 0.f, 1.f);
+  }
+
   inline void operator+=(const Vec4f32 &other) noexcept {
     this->m_reg = _mm_add_ps(this->m_reg, other.m_reg);
   }

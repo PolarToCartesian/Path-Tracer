@@ -4,4 +4,4 @@
 #include <cmath>
 #include <cstdint>
 
-void PrintProgressBar(const float doneTotalRatio) noexcept;
+void PrintProgressBar(const std::uint32_t done, const uint32_t total) noexcept;
