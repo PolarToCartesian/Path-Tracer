@@ -79,12 +79,21 @@ Vec3f32 Renderer::TraceRay(const Ray& ray, const std::uint32_t recursionDepth) n
   const Material& material = object.material;
 
   Ray newRay;
-  newRay.origin = closestIntersection.location;
+  newRay.origin = closestIntersection.location + object.GetNormal(newRay.origin) * 0.01f;
+  
+  const float alpha0 = 2 * M_PI * std::rand()/(float)RAND_MAX;
+  const float alpha1 = std::acos(1 - 2 * std::rand()/(float)RAND_MAX);
+
+  const Vec3f32 v{std::sin(alpha0)*std::cos(alpha1),
+                  std::cos(alpha0)*std::sin(alpha1),
+                  std::cos(alpha1)};
+
   newRay.direction = object.GetNormal(newRay.origin);
 
   const Vec3f32 incomingColor = TraceRay(newRay, recursionDepth + 1u);
 
-  Vec3f32 finalColor = material.emittance + incomingColor;
+  const float dotProduct = std::min(std::max(DotProduct(newRay.direction, object.GetNormal(newRay.origin)), 0.f), 1.f);
+  Vec3f32 finalColor = material.diffuse * (material.emittance + incomingColor * dotProduct);
   finalColor.Clamp(0.f, 1.f);
 
   return finalColor;
