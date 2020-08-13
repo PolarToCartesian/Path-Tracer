@@ -17,6 +17,10 @@ class Renderer {
   static Camera camera;
   static std::vector<Object*> pObjects;
 
+private:
+  static std::optional<Intersection> Renderer::GetClosestIntersection(const Ray& ray) noexcept;
+
+public:
   static void Draw(Image* pImage, const std::uint32_t nSamples) noexcept;
 
   static Vec3f32 TraceRay(const Ray& ray, const std::uint32_t recursionDepth = 0u) noexcept;
