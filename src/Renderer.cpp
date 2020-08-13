@@ -3,6 +3,20 @@
 Camera Renderer::camera;
 std::vector<Object*> Renderer::pObjects;
 
+std::optional<Intersection> Renderer::GetClosestIntersection(const Ray& ray) noexcept
+{
+  std::optional<Intersection> closest;
+  for (Object* pObject : Renderer::pObjects) {
+    const std::optional<Intersection> current = pObject->Intersects(ray);
+
+    if (current.has_value())
+      if (!closest.has_value() || current.value().distance < closest.value().distance)
+        closest = current;
+  }
+
+  return closest;
+}
+
 void Renderer::Draw(Image* pImage, const std::uint32_t nSamples) noexcept {
   Image& surface = *pImage;
 
@@ -31,25 +45,13 @@ void Renderer::Draw(Image* pImage, const std::uint32_t nSamples) noexcept {
 }
 
 Vec3f32 Renderer::TraceRay(const Ray& ray, const std::uint32_t recursionDepth) noexcept {
-  if (recursionDepth == 10u)
-    return {};
-
-  // Get Closest Intersection
   Intersection closestIntersection;
   {
-    closestIntersection.pObject = nullptr;
+    const auto closestIntersectionOptional = Renderer::GetClosestIntersection(ray);
+    if (!closestIntersectionOptional.has_value()) return Vec3f32{ };
 
-		for (const Object* object : Renderer::pObjects)
-		{
-			const std::optional<Intersection> intersection = object->Intersects(ray);
-
-			if (intersection.has_value())
-				if (closestIntersection.pObject == nullptr || intersection.value().distance < closestIntersection.distance)
-					closestIntersection = intersection.value();
-		}
+    closestIntersection = closestIntersectionOptional.value();
   }
-
-  if (closestIntersection.pObject == nullptr) return Vec3f32{ };
 
   // Extract Intersected Object
   const Object&   object   = *closestIntersection.pObject;
