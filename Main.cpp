@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Renderer.hpp"
+#include "Path-Tracer/Include/Renderer.hpp"
 
 int main(int argc, char* argv[]) {
   Image surface(500, 500);
@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
   Renderer::pObjects.push_back(
       new Sphere(Vec3f32{0.f, 0.f, -1.25f}, 1.f, material));
 
-  Renderer::Draw(&surface, 1000);
+  Renderer::Draw(&surface, 100);
 
   surface.Save("frame.ppm");
 }

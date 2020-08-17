@@ -1,7 +1,9 @@
 #pragma once
 
 #include <mmintrin.h>
+#include <x86intrin.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
@@ -25,9 +27,7 @@ struct Vec4f32 {
     this->m_reg = _mm_set_ps(w, z, y, x);
   }
 
-  inline float Length() const noexcept {
-    return std::sqrt(DotProduct(this->m_reg, this->m_reg));
-  }
+  inline float Length() const noexcept { return std::sqrt(DotProduct(this->m_reg, this->m_reg)); }
 
   inline void Normalize() noexcept { this->operator/=(this->Length()); }
 
@@ -84,13 +84,9 @@ inline Vec4f32 operator/(const Vec4f32 &v, const float &n) noexcept {
   return _mm_div_ps(v.m_reg, _mm_set1_ps(n));
 }
 
-inline Vec4f32 operator*(const float &n, const Vec4f32 &v) noexcept {
-  return operator*(v, n);
-}
+inline Vec4f32 operator*(const float &n, const Vec4f32 &v) noexcept { return operator*(v, n); }
 
-inline Vec4f32 operator/(const float &n, const Vec4f32 &v) noexcept {
-  return operator/(v, n);
-}
+inline Vec4f32 operator/(const float &n, const Vec4f32 &v) noexcept { return operator/(v, n); }
 
 inline float DotProduct(const Vec4f32 &a, const Vec4f32 &b) noexcept {
   // __m128 product = (a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w)
@@ -109,8 +105,7 @@ inline Vec4f32 Reflected(const Vec4f32 &in, const Vec4f32 &normal) noexcept {
 
 inline Vec4f32 Normalized(const Vec4f32 &v) noexcept { return v / v.Length(); }
 
-inline std::ostream &operator<<(std::ostream &stream,
-                                const Vec4f32 &v) noexcept {
+inline std::ostream &operator<<(std::ostream &stream, const Vec4f32 &v) noexcept {
   stream << '(' << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ')';
 
   return stream;
