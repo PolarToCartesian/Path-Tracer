@@ -12,8 +12,9 @@ struct Object {
   Object(const Vec3f32& position, const Material& material) noexcept
       : position(position), material(material) {}
 
-  virtual Vec3f32                     GetNormal (const Vec3f32& point) const noexcept = 0;
-  virtual std::optional<Intersection> Intersects(const Ray& in)        const noexcept = 0;
+  virtual Vec3f32 GetNormal(const Vec3f32& point) const noexcept = 0;
+  virtual std::optional<Intersection> Intersects(
+      const Ray& in) const noexcept = 0;
 
   virtual ~Object() {}
 };

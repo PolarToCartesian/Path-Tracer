@@ -1,9 +1,10 @@
 #pragma once
 
-#include <x86intrin.h>
+#include <mmintrin.h>
 
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 
 struct Vec4f32;
 
@@ -93,9 +94,9 @@ inline Vec4f32 operator/(const float &n, const Vec4f32 &v) noexcept {
 
 inline float DotProduct(const Vec4f32 &a, const Vec4f32 &b) noexcept {
   // __m128 product = (a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w)
-  const __m128 product  = _mm_mul_ps(a.m_reg, b.m_reg);
+  const __m128 product = _mm_mul_ps(a.m_reg, b.m_reg);
 
-  const __m128 tmp_hadd1 = _mm_hadd_ps(product,   product);
+  const __m128 tmp_hadd1 = _mm_hadd_ps(product, product);
   const __m128 tmp_hadd2 = _mm_hadd_ps(tmp_hadd1, tmp_hadd1);
 
   // return (tmp_hadd2.x)
@@ -107,6 +108,13 @@ inline Vec4f32 Reflected(const Vec4f32 &in, const Vec4f32 &normal) noexcept {
 }
 
 inline Vec4f32 Normalized(const Vec4f32 &v) noexcept { return v / v.Length(); }
+
+inline std::ostream &operator<<(std::ostream &stream,
+                                const Vec4f32 &v) noexcept {
+  stream << '(' << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ')';
+
+  return stream;
+}
 
 struct Vec3u8 {
   std::uint8_t r, g, b;

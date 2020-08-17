@@ -1,6 +1,6 @@
-#include "Renderer.hpp"
-
 #include <iostream>
+
+#include "Renderer.hpp"
 
 int main(int argc, char* argv[]) {
   Image surface(500, 500);
@@ -11,11 +11,11 @@ int main(int argc, char* argv[]) {
   material.diffuse = Vec3f32{1.f, 1.f, 1.f};
   Renderer::pObjects.push_back(
       new Sphere(Vec3f32{0.f, 0.f, 1.5f}, 1.f, material));
-  material.emittance = {1.f,1.f,1.f};
+  material.emittance = {1.f, 1.f, 1.f};
   Renderer::pObjects.push_back(
       new Sphere(Vec3f32{0.f, 0.f, -1.25f}, 1.f, material));
 
-  Renderer::Draw(&surface, 100);
+  Renderer::Draw(&surface, 1000);
 
   surface.Save("frame.ppm");
 }
