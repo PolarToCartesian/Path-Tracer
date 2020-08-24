@@ -1,6 +1,6 @@
 #include "../Include/Renderer.hpp"
 
-Camera Renderer::camera;
+Camera Renderer::camera({}, M_PI / 2.f);
 std::vector<Object *> Renderer::pObjects;
 
 std::optional<Intersection> Renderer::GetClosestIntersection(const Ray &ray) noexcept {
@@ -28,8 +28,9 @@ void Renderer::Draw(Image *pImage, const std::uint32_t nSamples) noexcept {
       for (std::uint32_t x = 0u; x < surface.GetWidth(); x++) {
         Vec3f32 pixelColor;
 
-        for (std::uint32_t i = 0u; i < nSamples; i++) {              ;
-          pixelColor += TraceRay(Renderer::camera.GenerateRandomRay(x, y, surface.GetWidth(), surface.GetHeight()));
+        for (std::uint32_t i = 0u; i < nSamples; i++) {
+          pixelColor += TraceRay(
+              Renderer::camera.GenerateRandomRay(x, y, surface.GetWidth(), surface.GetHeight()));
         }
 
         pixelColor /= nSamples;
@@ -75,22 +76,33 @@ Vec3f32 Renderer::TraceRay(const Ray &ray, const std::uint32_t recursionDepth) n
 
   const Vec3f32 surfaceNormal = object.GetNormal(closestIntersection.location);
 
-  Ray newRay;
-  newRay.origin = closestIntersection.location + surfaceNormal * 0.1f;
+  Vec3f32 finalColor;
+  if (std::rand() / (float)RAND_MAX < material.reflectivity) {
+    Ray newRay;
+    newRay.origin = closestIntersection.location + surfaceNormal * 0.1f;
+    newRay.direction = Reflected(ray.direction, surfaceNormal);
 
-  const Vec3f32 angle((3.141592f / 4.f) * (2.f * (std::rand() / (float)RAND_MAX) - 1.f),
-                      (3.141592f / 4.f) * (2.f * (std::rand() / (float)RAND_MAX) - 1.f),
-                      (3.141592f / 4.f) * (2.f * (std::rand() / (float)RAND_MAX) - 1.f));
+    const Vec3f32 reflectedColor = TraceRay(newRay, recursionDepth + 1u);
+    finalColor = reflectedColor + material.emittance;
+  } else {
+    Ray newRay;
+    newRay.origin = closestIntersection.location + surfaceNormal * 0.1f;
 
-  newRay.direction =
-      Vec3f32(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z, 1.f) * MakeRotation(angle);
+    const Vec3f32 angle((3.141592f / 4.f) * (2.f * (std::rand() / (float)RAND_MAX) - 1.f),
+                        (3.141592f / 4.f) * (2.f * (std::rand() / (float)RAND_MAX) - 1.f),
+                        (3.141592f / 4.f) * (2.f * (std::rand() / (float)RAND_MAX) - 1.f));
 
-  const Vec3f32 incomingColor = TraceRay(newRay, recursionDepth + 1u);
+    newRay.direction =
+        Vec3f32(surfaceNormal.x, surfaceNormal.y, surfaceNormal.z, 1.f) * MakeRotation(angle);
 
-  const float dotProduct = std::clamp(DotProduct(newRay.direction, surfaceNormal), 0.f, 1.f);
+    const Vec3f32 incomingColor = TraceRay(newRay, recursionDepth + 1u);
 
-  Vec3f32 finalColor = material.diffuse *
-                       (material.emittance + (incomingColor * dotProduct / PROBABILITY_OF_NEW_RAY));
+    const float dotProduct = std::clamp(DotProduct(newRay.direction, surfaceNormal), 0.f, 1.f);
+
+    finalColor = material.diffuse *
+                 (material.emittance + (incomingColor * dotProduct / PROBABILITY_OF_NEW_RAY));
+  }
+
   finalColor.Clamp(0.f, 1.f);
 
   return finalColor;
