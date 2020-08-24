@@ -27,3 +27,13 @@ struct Sphere : Object {
 
   virtual std::optional<Intersection> Intersects(const Ray &ray) const noexcept override;
 };
+
+struct Plane : Object {
+  Vec3f32 normal;
+
+  Plane(const Vec3f32 &position, const Vec3f32 &normal, const Material &material) noexcept;
+
+  virtual Vec3f32 GetNormal(const Vec3f32 &point) const noexcept override;
+
+  virtual std::optional<Intersection> Intersects(const Ray &ray) const noexcept override;
+};
