@@ -6,7 +6,7 @@ Ray Camera::GenerateRandomRay(const std::uint32_t x, const std::uint32_t y,
                               const std::uint32_t width, const std::uint32_t height) noexcept {
   Ray ray;
 
-  const float apsectRatio = height / (float)width;
+  const float apsectRatio = width / (float)height;
   const float halffovTan = std::tan(this->fov / 2.f);
 
   ray.origin = this->position;
