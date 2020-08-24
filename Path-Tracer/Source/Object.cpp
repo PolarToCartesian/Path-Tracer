@@ -36,3 +36,23 @@ std::optional<Intersection> Sphere::Intersects(const Ray &ray) const noexcept {
 
   return Intersection{t, ray.origin + ray.direction * t, (Object *)this};
 }
+
+Plane::Plane(const Vec3f32 &position, const Vec3f32 &normal, const Material &material) noexcept
+    : Object(position, material), normal(normal) {}
+
+Vec3f32 Plane::GetNormal(const Vec3f32 &point) const noexcept { return normal; }
+
+std::optional<Intersection> Plane::Intersects(const Ray &ray) const noexcept {
+  // thanks
+  // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
+
+  const float denom = DotProduct(this->normal, ray.direction);
+  if (std::abs(denom) >= 1e-6) {
+    const Vec3f32 v = this->position - ray.origin;
+    const float t = DotProduct(v, normal) / denom;
+
+    if (t >= 0) return Intersection{t, ray.origin + ray.direction * t, (Object *)this};
+  }
+
+  return {};
+}
