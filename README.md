@@ -2,7 +2,7 @@
 
 ## Pretty Pictures
 
-![Pretty Picture 0](/screenshots/25-08-2020-->100 spp.png)
+![Pretty Picture 0](/screenshots/25-08-2020-->100%20spp.png)
 
 100 Samples Per Pixel
 
