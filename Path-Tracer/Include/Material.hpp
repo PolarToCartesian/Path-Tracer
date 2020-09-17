@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Vector.hpp"
+#include <Polar-Lib.hpp>
 
 struct Material {
-  Vec3f32 emittance;
-  Vec3f32 diffuse;
+  ::PL::Vec4f32 emittance;
+  ::PL::Vec4f32 diffuse;
 
   float reflectivity = 0.f;
 };

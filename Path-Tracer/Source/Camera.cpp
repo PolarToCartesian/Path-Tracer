@@ -1,10 +1,11 @@
 #include "../Include/Camera.hpp"
 
-Camera::Camera(const Vec3f32& position, const float fov) : position(position), fov(fov) {}
+Camera::Camera(const ::PL::Vec4f32& position, const float fov) : position(position), fov(fov) {}
 
-Ray Camera::GenerateRandomRay(const std::uint32_t x, const std::uint32_t y,
-                              const std::uint32_t width, const std::uint32_t height) noexcept {
-  Ray ray;
+::PL::Ray4f32 Camera::GenerateRandomRay(const std::uint32_t x, const std::uint32_t y,
+                                        const std::uint32_t width,
+                                        const std::uint32_t height) noexcept {
+  ::PL::Ray4f32 ray;
 
   const float apsectRatio = width / (float)height;
   const float halffovTan = std::tan(this->fov / 2.f);

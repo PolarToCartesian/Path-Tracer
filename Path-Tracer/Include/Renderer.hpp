@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Polar-Lib.hpp>
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
@@ -11,9 +12,7 @@
 
 #include "Camera.hpp"
 #include "Image.hpp"
-#include "Matrix.hpp"
 #include "Object.hpp"
-#include "Ray.hpp"
 
 class Renderer {
  public:
@@ -21,10 +20,11 @@ class Renderer {
   static std::vector<Object *> pObjects;
 
  private:
-  static std::optional<Intersection> GetClosestIntersection(const Ray &ray) noexcept;
+  static std::optional<Intersection> GetClosestIntersection(const ::PL::Ray4f32 &ray) noexcept;
 
  public:
   static void Draw(Image *pImage, const std::uint32_t nSamples) noexcept;
 
-  static Vec3f32 TraceRay(const Ray &ray, const std::uint32_t recursionDepth = 0u) noexcept;
+  static ::PL::Vec4f32 TraceRay(const ::PL::Ray4f32 &ray,
+                                const std::uint32_t recursionDepth = 0u) noexcept;
 };

@@ -1,19 +1,19 @@
 #pragma once
 
+#include <Polar-Lib.hpp>
 #include <optional>
 
 #include "Intersection.hpp"
 #include "Material.hpp"
-#include "Ray.hpp"
 
 struct Object {
-  Vec3f32 position;
+  ::PL::Vec4f32 position;
   Material material;
 
-  Object(const Vec3f32 &position, const Material &material) noexcept;
+  Object(const ::PL::Vec4f32 &position, const Material &material) noexcept;
 
-  virtual Vec3f32 GetNormal(const Vec3f32 &point) const noexcept = 0;
-  virtual std::optional<Intersection> Intersects(const Ray &in) const noexcept = 0;
+  virtual ::PL::Vec4f32 GetNormal(const ::PL::Vec4f32 &point) const noexcept = 0;
+  virtual std::optional<Intersection> Intersects(const ::PL::Ray4f32 &in) const noexcept = 0;
 
   virtual ~Object();
 };
@@ -21,19 +21,20 @@ struct Object {
 struct Sphere : Object {
   float radius;
 
-  Sphere(const Vec3f32 &position, const float radius, const Material &material) noexcept;
+  Sphere(const ::PL::Vec4f32 &position, const float radius, const Material &material) noexcept;
 
-  virtual Vec3f32 GetNormal(const Vec3f32 &point) const noexcept override;
+  virtual ::PL::Vec4f32 GetNormal(const ::PL::Vec4f32 &point) const noexcept override;
 
-  virtual std::optional<Intersection> Intersects(const Ray &ray) const noexcept override;
+  virtual std::optional<Intersection> Intersects(const ::PL::Ray4f32 &ray) const noexcept override;
 };
 
 struct Plane : Object {
-  Vec3f32 normal;
+  ::PL::Vec4f32 normal;
 
-  Plane(const Vec3f32 &position, const Vec3f32 &normal, const Material &material) noexcept;
+  Plane(const ::PL::Vec4f32 &position, const ::PL::Vec4f32 &normal,
+        const Material &material) noexcept;
 
-  virtual Vec3f32 GetNormal(const Vec3f32 &point) const noexcept override;
+  virtual ::PL::Vec4f32 GetNormal(const ::PL::Vec4f32 &point) const noexcept override;
 
-  virtual std::optional<Intersection> Intersects(const Ray &ray) const noexcept override;
+  virtual std::optional<Intersection> Intersects(const ::PL::Ray4f32 &ray) const noexcept override;
 };

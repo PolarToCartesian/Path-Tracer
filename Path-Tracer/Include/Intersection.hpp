@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Vector.hpp"
+#include <Polar-Lib.hpp>
 
 struct Object;
 
 struct Intersection {
   float distance;
-  Vec3f32 location;
+  ::PL::Vec4f32 location;
   Object *pObject;
 };
